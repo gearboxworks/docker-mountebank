@@ -1,7 +1,7 @@
 
 ################################################################################
 # WARNING: This file has been auto-generated. DO NOT EDIT: WARNING
-# Created on 2021-03-07T19:06:23+1100, using template:DockerfileRuntime.tmpl and json:gearbox.json
+# Created on 2021-03-07T19:09:07+1100, using template:DockerfileRuntime.tmpl and json:gearbox.json
 # Referenced Docker container for docker-mountebank based off gearboxworks/gearbox-base:alpine-3.10 with bbyars/mountebank:2.2.1 overlayed.
 
 ARG VERSION=2.2.1
@@ -84,6 +84,9 @@ RUN /bin/sh /etc/gearbox/build/mountebank.sh
 EXPOSE 22 9970 2525 
 WORKDIR /home/gearbox/projects
 
+
+# 9. Run S6 init.
+ENTRYPOINT []
 CMD ["/init"]
 
 # END
