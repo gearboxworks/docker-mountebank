@@ -38,7 +38,14 @@ then
 fi
 
 
-npm install -g mountebank@${GB_VERSION} --production
+mkdir -p /usr/local/mountebank/${GEARBOX_VERSION}
+cd /usr/local/mountebank/${GEARBOX_VERSION}
+
+if [ ! -f package.json ]
+then
+	wget -O package.json https://raw.githubusercontent.com/bbyars/mountebank/v${GEARBOX_VERSION}/package.json
+fi
+npm install -g mountebank@${GEARBOX_VERSION} --production
 
 
 c_ok "Generate installed file list"

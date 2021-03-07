@@ -42,19 +42,19 @@
 		"2.4.0": {
 			"majorversion": "2.4",
 			"latest": true,
-			"ref": "bbyars/mountebank:2.4.0",
+			"ref": "",
 			"base": "gearboxworks/gearbox-base:alpine-3.10"
 		},
 		"2.3.3": {
 			"majorversion": "2.3",
 			"latest": false,
-			"ref": "bbyars/mountebank:2.3.3",
+			"ref": "",
 			"base": "gearboxworks/gearbox-base:alpine-3.10"
 		},
 		"2.2.1": {
 			"majorversion": "2.2",
 			"latest": false,
-			"ref": "bbyars/mountebank:2.2.1",
+			"ref": "",
 			"base": "gearboxworks/gearbox-base:alpine-3.10"
 		}
 	}

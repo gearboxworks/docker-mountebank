@@ -1,31 +1,24 @@
 
 ################################################################################
 # WARNING: This file has been auto-generated. DO NOT EDIT: WARNING
-# Created on 2021-03-07T19:13:38+1100, using template:DockerfileRuntime.tmpl and json:gearbox.json
-# Referenced Docker container for docker-mountebank based off gearboxworks/gearbox-base:alpine-3.10 with bbyars/mountebank:2.4.0 overlayed.
+# Created on 2021-03-07T21:03:36+1100, using template:DockerfileRuntime.tmpl and json:gearbox.json
+# Plain Docker container for docker-mountebank based off gearboxworks/gearbox-base:alpine-3.10
 
 ARG VERSION=2.4.0
 
 # 1. First reference the gearbox-base image.
-FROM gearboxworks/gearbox-base:alpine-3.10 as gearbox-base
-
-# 2. Next reference the third party image.
-FROM bbyars/mountebank:2.4.0
+FROM gearboxworks/gearbox-base:alpine-3.10
 ARG VERSION
 ARG GEARBOX_ENTRYPOINT
 ARG GEARBOX_ENTRYPOINT_ARGS
-USER root
 
-# 3. Copy the build directory over from gearbox-base image.
-COPY --from=gearbox-base /etc/gearbox /etc/gearbox
-
-# 4. Set up env variables.
+# 2. Set up env variables.
 MAINTAINER Gearbox Team <team@gearbox.works>
 ENV GEARBOX_CONTAINER_NAME "docker-mountebank"
 ENV GEARBOX_CONTAINER_VERSION ${VERSION}
 ENV GEARBOX_ENTRYPOINT ${GEARBOX_ENTRYPOINT}
 ENV GEARBOX_ENTRYPOINT_ARGS ${GEARBOX_ENTRYPOINT_ARGS}
-LABEL gearbox.json='{"schema": "gear-1","meta": {"state": "production","organization": "gearboxworks","name": "mountebank","label": "mountebank","info": "MB","description": ["mountebank is the most capable open source service virtualization tool in existence, and will cure what ails you, guaranteed."],"maintainer": "Gearbox Team <team@gearbox.works>","class": "system","refurl": "https://github.com/mountebank"},"build": {"ports": {"mb": "2525"},"run": "/usr/local/bin/mb.sh","args": "start","env": {"MB_HOSTNAME": "mountebank.gearboxworks.io","MB_BIND_ADDR": "0.0.0.0:2525"},"network": "--network gearboxnet","volumes": "","restart": "--restart always"},"run": {"commands": {"default": "/usr/local/bin/mb.sh","mb": "/usr/local/bin/mb.sh"},"args": "start --nologfile"},"project": {},"extensions": {},"versions": {"2.4.0": {"majorversion": "2.4","latest": true,"ref": "bbyars/mountebank:2.4.0","base": "gearboxworks/gearbox-base:alpine-3.10"},"2.3.3": {"majorversion": "2.3","latest": false,"ref": "bbyars/mountebank:2.3.3","base": "gearboxworks/gearbox-base:alpine-3.10"},"2.2.1": {"majorversion": "2.2","latest": false,"ref": "bbyars/mountebank:2.2.1","base": "gearboxworks/gearbox-base:alpine-3.10"}}}'
+LABEL gearbox.json='{"schema": "gear-1","meta": {"state": "production","organization": "gearboxworks","name": "mountebank","label": "mountebank","info": "MB","description": ["mountebank is the most capable open source service virtualization tool in existence, and will cure what ails you, guaranteed."],"maintainer": "Gearbox Team <team@gearbox.works>","class": "system","refurl": "https://github.com/mountebank"},"build": {"ports": {"mb": "2525"},"run": "/usr/local/bin/mb.sh","args": "start","env": {"MB_HOSTNAME": "mountebank.gearboxworks.io","MB_BIND_ADDR": "0.0.0.0:2525"},"network": "--network gearboxnet","volumes": "","restart": "--restart always"},"run": {"commands": {"default": "/usr/local/bin/mb.sh","mb": "/usr/local/bin/mb.sh"},"args": "start --nologfile"},"project": {},"extensions": {},"versions": {"2.4.0": {"majorversion": "2.4","latest": true,"ref": "","base": "gearboxworks/gearbox-base:alpine-3.10"},"2.3.3": {"majorversion": "2.3","latest": false,"ref": "","base": "gearboxworks/gearbox-base:alpine-3.10"},"2.2.1": {"majorversion": "2.2","latest": false,"ref": "","base": "gearboxworks/gearbox-base:alpine-3.10"}}}'
 LABEL gearbox.version='2.4.0'
 ENV GEARBOX_VERSION "2.4.0"
 LABEL container.class="system"
@@ -65,29 +58,24 @@ LABEL container.latest="true"
 ENV GEARBOX_LATEST "true"
 LABEL container.majorversion="2.4"
 ENV GEARBOX_MAJORVERSION "2.4"
-LABEL container.ref="bbyars/mountebank:2.4.0"
-ENV GEARBOX_REF "bbyars/mountebank:2.4.0"
+LABEL container.ref=""
+ENV GEARBOX_REF ""
 ENV MB_BIND_ADDR "0.0.0.0:2525"
 ENV MB_HOSTNAME "mountebank.gearboxworks.io"
 
-# 5. Now copy the local files specific to this container.
+# 3. Now copy the local files specific to this container.
 COPY build /etc/gearbox
 COPY versions/${VERSION}/build /etc/gearbox
 
-# 6. Run the base.sh script to set everything up.
+# 4. Run the base.sh script to set everything up.
 RUN /bin/sh /etc/gearbox/build/base.sh
 
-# 7. Run the mountebank.sh script to set everything up.
+# 5. Run the mountebank.sh script to set everything up.
 RUN /bin/sh /etc/gearbox/build/mountebank.sh
 
-# 8. Expose ports.
+# 6. Expose ports.
 EXPOSE 22 9970 2525 
 WORKDIR /home/gearbox/projects
-
-
-# 9. Run S6 init.
-ENTRYPOINT []
-CMD ["/init"]
 
 # END
 ################################################################################
