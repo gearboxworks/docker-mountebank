@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# set -x
 # WARNING: This file is SOURCED. Don't add in any "exit", otherwise your shell will exit.
 export ARCH GB_BINFILE GB_ARCHDIR GB_BINDIR GB_BASEDIR GB_JSONFILE GB_VERSIONS GB_VERSION GITBIN GB_GITURL GB_GITREPO
 
@@ -13,8 +14,8 @@ case ${ARCH} in
 		;;
 esac
 
-GB_BINFILE="$(./bin/${ARCH}/JsonToConfig -json-string '{}' -template-string '{{ .ExecName }}')"
-GB_ARCHDIR="$(./bin/${ARCH}/JsonToConfig -json-string '{}' -template-string '{{ .DirPath }}')"
+GB_BINFILE="$(./bin/${ARCH}/launch scribe load --json '{}' --template '{{ .Exec.Cmd }}')"
+GB_ARCHDIR="$(./bin/${ARCH}/launch scribe load --json '{}' --template '{{ .Exec.CmdDir }}')"
 GB_BINDIR="$(dirname "$GB_ARCHDIR")"
 GB_BASEDIR="$(dirname "$GB_BINDIR")"
 GB_JSONFILE="${GB_BASEDIR}/gearbox.json"
@@ -23,15 +24,15 @@ LAUNCHBIN="${GB_BINDIR}/${ARCH}/launch"
 
 if [ -f "${GB_JSONFILE}" ]
 then
-	GB_VERSIONS="$(${GB_BINFILE} -json ${GB_JSONFILE} -template-string '{{ range $version, $value := .Json.versions }}{{ if ne $version "" }}{{ $version }}{{ end }} {{ end }}')"
-	GB_VERSIONS="$(echo ${GB_VERSIONS})"	# Easily remove CR
+	GB_VERSIONS="$(${LAUNCHBIN} scribe load ${GB_JSONFILE} --template '{{ ListVersions .Json }}' )"
 
-	GB_IMAGENAME="$(${GB_BINFILE} -json ${GB_JSONFILE} -template-string '{{ .Json.meta.organization }}/{{ .Json.meta.name }}')"
+	GB_IMAGENAME="$(${LAUNCHBIN} scribe load ${GB_JSONFILE} --template '{{ .Json.meta.organization }}/{{ .Json.meta.name }}')"
 
-	GB_NAME="$(${GB_BINFILE} -json ${GB_JSONFILE} -template-string '{{ .Json.meta.name }}')"
+	GB_NAME="$(${LAUNCHBIN} scribe load ${GB_JSONFILE} --template '{{ .Json.meta.name }}')"
 fi
 
-GB_BASE="$(${GB_BINFILE} -json gearbox.json -template-string '{{ .Json.build.base }}')"
+# GB_BASE="$(${LAUNCHBIN} scribe load ${GB_JSONFILE} --template '{{ with .Json.build.base }}{{ . }}{{ end }}')"
+GB_BASE="$(${LAUNCHBIN} scribe load ${GB_JSONFILE} --template '{{ if (Contains .Json.build "base") }}{{ FindInMap .Json.build "base" }}{{ end }}')"
 
 GITBIN="$(which git)"
 GB_GITURL="$(${GITBIN} config --get remote.origin.url)"
@@ -91,8 +92,8 @@ _getVersions() {
 
 ################################################################################
 _listVersions() {
-	echo "	all - All versions"
-	${GB_BINFILE} -json ${GB_JSONFILE} -template-string '{{ range $version, $value := .Json.versions }}{{ if ne $version "" }}\t{{ $version }} - {{ $.Json.meta.organization }}/{{ $.Json.meta.name }}:{{ $version }}\n{{ end }}{{ end }}'
+	echo "	 all - All versions"
+	${LAUNCHBIN} scribe load ${GB_JSONFILE} --template '{{ ListVersionInfo .Json }}'
 	echo ""
 }
 
@@ -104,7 +105,7 @@ gb_getenv() {
 
 	if [ -f "TEMPLATE/version/.env.tmpl" ]
 	then
-		${GB_BINFILE} -json "${GB_JSONFILE}" -template "TEMPLATE/version/.env.tmpl" -out "${GB_VERDIR}/.env"
+		${LAUNCHBIN} scribe load ${GB_JSONFILE} TEMPLATE/version/.env.tmpl --force --out "${GB_VERDIR}/.env"
 	fi
 
 	if [ -f "${GB_VERDIR}/.env" ]
@@ -121,7 +122,7 @@ gb_getdockerfile() {
 
 	if [ -f "TEMPLATE/version/DockerfileRuntime.tmpl" ]
 	then
-		${GB_BINFILE} -json "${GB_JSONFILE}" -template "TEMPLATE/version/DockerfileRuntime.tmpl" -out "${GB_VERDIR}/DockerfileRuntime"
+		${LAUNCHBIN} scribe load ${GB_JSONFILE} TEMPLATE/version/DockerfileRuntime.tmpl --force --out "${GB_VERDIR}/DockerfileRuntime"
 	fi
 }
 
@@ -183,7 +184,6 @@ gb_init() {
 
 	gb_create-build ${GB_JSONFILE}
 	gb_create-version ${GB_JSONFILE}
-	# ${DIR}/JsonToConfig-$(uname -s) -json "${GB_JSONFILE}" -template TEMPLATE/README.md.tmpl -out README.md
 
 	return 0
 }
@@ -202,11 +202,11 @@ gb_create-build() {
 	else
 		p_ok "${FUNCNAME[0]}" "Creating build directory."
 		cp -i TEMPLATE/build.sh.tmpl .
-		${GB_BINFILE} -json ${GB_JSONFILE} -create build.sh.tmpl -shell
+		${LAUNCHBIN} scribe run ${GB_JSONFILE} build.sh.tmpl
 		rm -f build.sh.tmpl build.sh
 	fi
 
-	${GB_BINFILE} -template ./TEMPLATE/README.md.tmpl -json ${GB_JSONFILE} -out README.md
+	${LAUNCHBIN} scribe load ${GB_JSONFILE} ./TEMPLATE/README.md.tmpl --force --out README.md
 
 	cp ./TEMPLATE/Makefile .
 	if [ "${GB_BASE}" == "true" ]
@@ -234,19 +234,19 @@ gb_create-version() {
 		then
 			gb_getenv ${GB_VERSION}
 			p_info "${FUNCNAME[0]}" "Updating version directory \"${GB_VERSION}\"."
-			${GB_BINFILE} -json ${GB_JSONFILE} -template ./TEMPLATE/version/.env.tmpl -out "${GB_VERDIR}/.env"
-			${GB_BINFILE} -json ${GB_JSONFILE} -template ./TEMPLATE/version/DockerfileRuntime.tmpl -out "${GB_VERDIR}/DockerfileRuntime"
+			${LAUNCHBIN} scribe load ${GB_JSONFILE} ./TEMPLATE/version/.env.tmpl --force --out "${GB_VERDIR}/.env"
+			${LAUNCHBIN} scribe load ${GB_JSONFILE} ./TEMPLATE/version/DockerfileRuntime.tmpl --force --out "${GB_VERDIR}/DockerfileRuntime"
 			rm -f "${GB_VERDIR}/gearbox.json"
 
 		else
 			p_info "${FUNCNAME[0]}" "Creating version directory \"${GB_VERSION}\"."
 			cp -i TEMPLATE/version.sh.tmpl .
-			${GB_BINFILE} -json ${GB_JSONFILE} -create version.sh.tmpl -shell
+			${LAUNCHBIN} scribe run ${GB_JSONFILE} version.sh.tmpl
 			rm -f version.sh.tmpl version.sh "${GB_VERDIR}/gearbox.json"
 		fi
 	done
 
-	${GB_BINFILE} -json ${GB_JSONFILE} -template ./TEMPLATE/README.md.tmpl -out README.md
+	${LAUNCHBIN} scribe load ${GB_JSONFILE} ./TEMPLATE/README.md.tmpl --force --out README.md
 
 	return 0
 }
@@ -270,49 +270,13 @@ gb_clean() {
 		rm -f ${GB_VERDIR}/logs/*.log
 
 
-		${LAUNCHBIN} uninstall "${GB_NAME}:${GB_VERSION}"
+		${LAUNCHBIN} clean "${GB_NAME}:${GB_VERSION}"
 		RETURN="$?"
 		if [ "${RETURN}" != "0" ]
 		then
 			p_err "${FUNCNAME[0]}" "Error exit code: ${RETURN}"
 			EXIT="1"
 		fi
-
-
-		gb_checkImage ${GB_IMAGEMAJORVERSION}
-		case ${STATE} in
-			'PRESENT')
-				p_info "${GB_IMAGEMAJORVERSION}" "Removing image."
-				docker image rm -f ${GB_IMAGEMAJORVERSION}
-				;;
-			*)
-				p_warn "${GB_IMAGEMAJORVERSION}" "Image already removed."
-				;;
-		esac
-
-
-		gb_checkImage ${GB_IMAGEVERSION}
-		case ${STATE} in
-			'PRESENT')
-				p_info "${GB_IMAGEVERSION}" "Removing image."
-				docker image rm -f ${GB_IMAGEVERSION}
-				;;
-			*)
-				p_warn "${GB_IMAGEVERSION}" "Image already removed."
-				;;
-		esac
-
-
-		gb_checkImage ${GB_IMAGENAME}:latest
-		case ${STATE} in
-			'PRESENT')
-				p_info "${GB_IMAGENAME}:latest" "Removing image."
-				docker image rm -f ${GB_IMAGENAME}:latest
-				;;
-			*)
-				p_warn "${GB_IMAGENAME}:latest" "Image already removed."
-				;;
-		esac
 	done
 
 	return ${EXIT}
@@ -623,7 +587,7 @@ gb_release() {
 		sleep 2
 
 		# gb_test ${GB_VERSION}
-		${LAUNCHBIN} test "${GB_NAME}:${GB_VERSION}"
+		${LAUNCHBIN} create test "${GB_NAME}:${GB_VERSION}"
 		RETURN="$?"
 		if [ "${RETURN}" != "0" ]
 		then
@@ -812,7 +776,7 @@ gb_test() {
 	do
 		gb_getenv ${GB_VERSION}
 
-		${LAUNCHBIN} test "${GB_NAME}:${GB_VERSION}"
+		${LAUNCHBIN} create test "${GB_NAME}:${GB_VERSION}"
 		RETURN="$?"
 		if [ "${RETURN}" != "0" ]
 		then
