@@ -1,7 +1,7 @@
 
 ################################################################################
 # WARNING: This file has been auto-generated. DO NOT EDIT: WARNING
-# Created on 2021-03-18T08:39:03+1100, using template:DockerfileRuntime.tmpl and json:gearbox.json
+# Created on 2021-03-18T10:19:40+1100, using template:DockerfileRuntime.tmpl and json:gearbox.json
 # Plain Docker container for docker-mountebank based off gearboxworks/gearbox-base:alpine-3.10
 
 ARG VERSION=2.2.1
@@ -18,7 +18,7 @@ ENV GEARBOX_CONTAINER_NAME "docker-mountebank"
 ENV GEARBOX_CONTAINER_VERSION ${VERSION}
 ENV GEARBOX_ENTRYPOINT ${GEARBOX_ENTRYPOINT}
 ENV GEARBOX_ENTRYPOINT_ARGS ${GEARBOX_ENTRYPOINT_ARGS}
-LABEL gearbox.json='{"schema": "gear-1","meta": {"state": "production","organization": "gearboxworks","name": "mountebank","label": "mountebank","info": "MB","description": ["mountebank is the most capable open source service virtualization tool in existence, and will cure what ails you, guaranteed."],"maintainer": "Gearbox Team <team@gearbox.works>","class": "system","refurl": "https://github.com/mountebank"},"build": {"ports": {"mb": "2525"},"run": "/usr/local/bin/mb.sh","args": "start","env": {"MB_HOSTNAME": "mountebank.gearboxworks.io","MB_BIND_ADDR": "0.0.0.0:2525"},"network": "--network gearboxnet","volumes": "","restart": "--restart always"},"run": {"commands": {"default": "/usr/local/bin/mb.sh","mb": "/usr/local/bin/mb.sh"},"args": "start --nologfile"},"project": {},"extensions": {},"versions": {"2.4.0": {"majorversion": "2.4","latest": true,"ref": "","base": "gearboxworks/gearbox-base:alpine-3.10"},"2.3.3": {"majorversion": "2.3","latest": false,"ref": "","base": "gearboxworks/gearbox-base:alpine-3.10"},"2.2.1": {"majorversion": "2.2","latest": false,"ref": "","base": "gearboxworks/gearbox-base:alpine-3.10"}}}'
+LABEL gearbox.json='{"schema": "gear-1","meta": {"state": "production","organization": "gearboxworks","name": "mountebank","label": "mountebank","info": "MB","description": ["mountebank is the most capable open source service virtualization tool in existence, and will cure what ails you, guaranteed."],"maintainer": "Gearbox Team <team@gearbox.works>","class": "system","refurl": "https://github.com/mountebank"},"build": {"ports": {"mb": "2525"},"run": "","args": "","env": {"MB_HOSTNAME": "mountebank.gearboxworks.io","MB_BIND_ADDR": "0.0.0.0:2525"},"network": "--network gearboxnet","volumes": "","restart": "--restart always"},"run": {"commands": {"default": "/usr/local/bin/mb","mb": "/usr/local/bin/mb"},"args": "--nologfile"},"project": {},"extensions": {},"versions": {"2.4.0": {"majorversion": "2.4","latest": true,"ref": "","base": "gearboxworks/gearbox-base:alpine-3.10"},"2.3.3": {"majorversion": "2.3","latest": false,"ref": "","base": "gearboxworks/gearbox-base:alpine-3.10"},"2.2.1": {"majorversion": "2.2","latest": false,"ref": "","base": "gearboxworks/gearbox-base:alpine-3.10"}}}'
 LABEL gearbox.version='2.2.1'
 ENV GEARBOX_VERSION "2.2.1"
 LABEL container.class="system"
@@ -39,8 +39,8 @@ LABEL container.refurl="https://github.com/mountebank"
 ENV GEARBOX_REFURL "https://github.com/mountebank"
 LABEL container.state="production"
 ENV GEARBOX_STATE "production"
-LABEL container.args="start"
-ENV GEARBOX_ARGS "start"
+LABEL container.args=""
+ENV GEARBOX_ARGS ""
 # SKIP env
 LABEL container.network="--network gearboxnet"
 ENV GEARBOX_NETWORK "--network gearboxnet"
@@ -48,8 +48,8 @@ LABEL container.ports="map[mb:2525]"
 ENV GEARBOX_PORTS "map[mb:2525]"
 LABEL container.restart="--restart always"
 ENV GEARBOX_RESTART "--restart always"
-LABEL container.run="/usr/local/bin/mb.sh"
-ENV GEARBOX_RUN "/usr/local/bin/mb.sh"
+LABEL container.run=""
+ENV GEARBOX_RUN ""
 LABEL container.volumes=""
 ENV GEARBOX_VOLUMES ""
 LABEL container.base="gearboxworks/gearbox-base:alpine-3.10"

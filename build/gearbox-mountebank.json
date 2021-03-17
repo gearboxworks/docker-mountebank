@@ -17,8 +17,8 @@
 		"ports": {
 			"mb": "2525"
 		},
-		"run": "/usr/local/bin/mb.sh",
-		"args": "start",
+		"run": "",
+		"args": "",
 		"env": {
 			"MB_HOSTNAME": "mountebank.gearboxworks.io",
 			"MB_BIND_ADDR": "0.0.0.0:2525"
@@ -29,10 +29,10 @@
 	},
 	"run": {
 		"commands": {
-			"default": "/usr/local/bin/mb.sh",
-			"mb": "/usr/local/bin/mb.sh"
+			"default": "/usr/local/bin/mb",
+			"mb": "/usr/local/bin/mb"
 		},
-		"args": "start --nologfile"
+		"args": "--nologfile"
 	},
 	"project": {
 	},
