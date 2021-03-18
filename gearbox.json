@@ -15,9 +15,11 @@
 	},
 	"build": {
 		"fixed_ports": {
+			"imposter": "9999",
 			"mb": "2525"
 		},
 		"ports": {
+			"imposter": "9999",
 			"mb": "2525"
 		},
 		"run": "",
